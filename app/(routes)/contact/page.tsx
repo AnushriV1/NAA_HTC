@@ -6,8 +6,38 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Clock, MapPin, Mail, Phone } from "lucide-react"
 import { PageTransition } from "@/components/page-transition"
+import { useState, FormEvent } from "react"
 
 export default function ContactPage() {
+  const [formStatus, setFormStatus] = useState("")
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+    const formData = new FormData(event.currentTarget)
+    
+    // Add the access key for web3forms API
+    formData.append("access_key", "4f41f715-4574-4364-be74-321a7a39b1a7")
+    
+    // This will redirect emails to hernurtureai7@gmail.com based on the first code snippet
+    const object = Object.fromEntries(formData)
+    const json = JSON.stringify(object)
+    
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json"
+        },
+        body: json
+      }).then((res) => res.json())
+      
+      setFormStatus(res.message)
+    } catch (error) {
+      setFormStatus("Something went wrong. Please try again.")
+    }
+  }
+
   return (
     <PageTransition>
       <div className="min-h-screen py-12">
@@ -133,24 +163,29 @@ export default function ContactPage() {
                 <CardTitle>Send us a message</CardTitle>
               </CardHeader>
               <CardContent>
-                <form className="space-y-4">
+                {formStatus && (
+                  <div className="mb-4 p-3 bg-green-100 text-green-800 rounded">
+                    {formStatus}
+                  </div>
+                )}
+                <form className="space-y-4" onSubmit={handleSubmit}>
                   <div className="grid md:grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Name</label>
-                      <Input placeholder="Your name" />
+                      <Input name="name" placeholder="Your name" required />
                     </div>
                     <div className="space-y-2">
                       <label className="text-sm font-medium">Email</label>
-                      <Input type="email" placeholder="Your email" />
+                      <Input type="email" name="email" placeholder="Your email" required />
                     </div>
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Subject</label>
-                    <Input placeholder="Message subject" />
+                    <Input name="subject" placeholder="Message subject" required />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Message</label>
-                    <Textarea placeholder="Your message" className="min-h-[120px]" />
+                    <Textarea name="message" placeholder="Your message" className="min-h-[120px]" required />
                   </div>
                   <Button type="submit" className="w-full">
                     Send Message
@@ -193,4 +228,3 @@ export default function ContactPage() {
     </PageTransition>
   )
 }
-
