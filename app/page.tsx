@@ -1,7 +1,6 @@
 import { redirect } from "next/navigation"
 
 export default function RootPage() {
-  // Redirect from the root to the welcome page
-  redirect("/home")
+  // Redirect from the root to the login page instead of home
+  redirect("/login")
 }
-
